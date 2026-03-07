@@ -30,10 +30,11 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // Create wallet for new user
+        // Create wallet for new user with unique address
         Wallet::create([
             'user_id' => $user->id,
             'balance' => 0,
+            'wallet_address' => collect(range(1, 4))->map(fn() => str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT))->implode(''),
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -45,6 +46,7 @@ class AuthController extends Controller
                 'username' => $user->username,
                 'email'    => $user->email,
                 'phone'    => $user->phone,
+                'wallet_address' => $user->wallet->wallet_address ?? null,
             ],
             'token' => $token,
             'token_type' => 'Bearer',
@@ -82,6 +84,7 @@ class AuthController extends Controller
                 'username' => $user->username,
                 'email'    => $user->email,
                 'phone'    => $user->phone,
+                'wallet_address' => $user->wallet->wallet_address ?? null,
             ],
             'token' => $token,
             'token_type' => 'Bearer',

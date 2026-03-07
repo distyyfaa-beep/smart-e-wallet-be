@@ -82,21 +82,26 @@ class WalletController extends Controller
             'amount'      => [
                 'required',
                 'integer',
-                'min:1',
+                'min:10000',
                 'max:100000000',
             ],
         ]);
 
         $sender = $request->user();
+        $target = trim($request->recipient);
 
-        // Find recipient by email or phone
-        $recipient = \App\Models\User::where('email', $request->recipient)
-            ->orWhere('phone', $request->recipient)
+        // Find recipient by email, phone, or wallet_address
+        $recipient = \App\Models\User::where('email', $target)
+            ->orWhere('phone', $target)
+            ->orWhereHas('wallet', function($query) use ($target) {
+                // Support both raw ID and space-formatted ID
+                $query->where('wallet_address', str_replace(' ', '', $target));
+            })
             ->first();
 
         if (!$recipient) {
             return response()->json([
-                'message' => 'Pengguna penerima tidak ditemukan.',
+                'message' => 'Pengguna atau Wallet ID tidak ditemukan.',
             ], 404);
         }
 
@@ -153,11 +158,19 @@ class WalletController extends Controller
 
         $senderWallet->refresh();
 
+        // Get the last transaction for the receipt
+        $transaction = Transaction::where('sender_id', $sender->id)
+            ->where('type', 'transfer_out')
+            ->latest()
+            ->first();
+
         return response()->json([
             'message'   => 'Transfer berhasil.',
             'recipient' => $recipient->username,
             'amount'    => (int) $request->amount,
             'balance'   => (float) $senderWallet->balance,
+            'transaction_id' => $transaction->id ?? rand(1000, 9999),
+            'date' => $transaction->created_at->toIso8601String(),
         ]);
     }
 
