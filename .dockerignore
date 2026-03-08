@@ -1,0 +1,38 @@
+# Dependencies
+vendor/
+node_modules/
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Storage (runtime files, logs)
+storage/logs/*.log
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Tests & dev tools
+tests/
+phpunit.xml
+.phpunit.result.cache
+phpunit.xml.dist
+
+# IDE configs
+.idea/
+.vscode/
+*.code-workspace
+
+# Docker itself
+Dockerfile
+.dockerignore
+
+# Laravel dev cache (will be regenerated in build)
+bootstrap/cache/*.php
