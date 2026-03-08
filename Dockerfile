@@ -41,8 +41,9 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Railway provides $PORT dynamically — default to 8080
 EXPOSE 8080
 
-# Entrypoint: cache config (ENV vars tersedia di sini), migrate, lalu serve
+# Entrypoint: cache config (ENV vars tersedia di sini), migrate, seed, lalu serve
 CMD php artisan config:cache && \
     php artisan route:cache && \
     php artisan migrate --force && \
+    php artisan db:seed --force && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
