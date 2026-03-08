@@ -19,12 +19,11 @@ return [
 
     'allowed_methods' => ['*'],
 
-    // Di Railway: set FRONTEND_URL=https://your-fe.up.railway.app
-    'allowed_origins' => array_filter([
-        env('FRONTEND_URL'),
+    'allowed_origins' => [
+        'https://smart-e-wallet-fe.vercel.app',
         'http://localhost:5173',
         'http://localhost:3000',
-    ]),
+    ],
 
     'allowed_origins_patterns' => [],
 
