@@ -37,14 +37,12 @@ RUN composer run-script post-autoload-dump
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Generate optimized config/route/view cache
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
 
 # Railway provides $PORT dynamically — default to 8080
 EXPOSE 8080
 
-# Entrypoint: run migrations then start server
-CMD php artisan migrate --force && \
+# Entrypoint: cache config (ENV vars tersedia di sini), migrate, lalu serve
+CMD php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan migrate --force && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
